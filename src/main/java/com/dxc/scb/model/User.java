@@ -1,6 +1,7 @@
 package com.dxc.scb.model;
 
 import java.util.Arrays;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +9,8 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.dxc.scb.model.Address;
 import com.dxc.scb.model.Enums.Role;
@@ -35,10 +38,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users",uniqueConstraints = { @UniqueConstraint(columnNames = { "email", "role" }) })
-public class User implements UserDetails{
+public class User implements UserDetailsService{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public Long id;
 
     @Column()
     private String username;
@@ -64,45 +67,44 @@ public class User implements UserDetails{
     @Column(name = "role")
     private Enums.Role role;
 	
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	//changes casade type merge 1042024
+	
+    @OneToOne(mappedBy = "user", cascade = CascadeType.MERGE)
     private Address address;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.MERGE)
     private List<Order> orders;
     
     @OneToOne(mappedBy = "user")
     private Cart cart;
 
+	
 
-    
-	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
-		return List.of(new SimpleGrantedAuthority(role.name()));
+		return null;
 	}
 
-	@Override
 	public boolean isAccountNonExpired() {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 
-	@Override
 	public boolean isAccountNonLocked() {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 
-	@Override
+	
 	public boolean isCredentialsNonExpired() {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 
-	@Override
+	
 	public boolean isEnabled() {
 		// TODO Auto-generated method stub
-		return true;
+		return false;
 	}
 
 	public static User build(User user) {
@@ -124,6 +126,12 @@ public class User implements UserDetails{
                 
                 
         );
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

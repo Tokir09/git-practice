@@ -15,6 +15,7 @@ import com.dxc.scb.dto.CartItemDto;
 import com.dxc.scb.dto.ProductDto;
 import com.dxc.scb.Exception.CartItemNotExistException;
 import com.dxc.scb.Repository.CartRepository;
+import com.dxc.scb.Repository.ProductRepository;
 import com.dxc.scb.model.Cart;
 import com.dxc.scb.model.Product;
 import com.dxc.scb.model.User;
@@ -29,14 +30,24 @@ public class CartServiceImpl implements CartService{
  
     @Autowired
     private CartRepository cartRepository;
+    private ProductRepository productRepository;
  
-    public CartServiceImpl(CartRepository cartRepository) {
+    public CartServiceImpl(CartRepository cartRepository,ProductRepository productRepository) {
         this.cartRepository = cartRepository;
+        this.productRepository=productRepository;
     }
  
     public void addToCart(AddToCartDto addToCartDto, Product product, User user){
-        Cart cart = new Cart(product, addToCartDto.getQuantity(), user);
+	Cart cart = new Cart();
+        cart.setProduct(product);
+        cart.setUser(user);
+        cart.setQuantity(addToCartDto.getQuantity());
         cartRepository.save(cart);
+//    	changes 1042024
+       
+//    	
+//        Cart cart = new Cart(product, addToCartDto.getQuantity(), user);
+//        cartRepository.save(cart);
     }
  
  
@@ -60,13 +71,19 @@ public class CartServiceImpl implements CartService{
     
  
     public static CartItemDto getDtoFromCart(Cart cart) {
-    	return new CartItemDto(cart);
-	}
+        CartItemDto cartItemDto = new CartItemDto();
+        cartItemDto.setId(cart.getId());
+        cartItemDto.setQuantity(cart.getQuantity());
+        cartItemDto.setProduct(cart.getProduct());
+        return cartItemDto;
+    }
+
 
 	public void updateCartItem(AddToCartDto cartDto, User user,Product product){
         Cart cart = cartRepository.findByUserId(cartDto.getId());
         cart.setQuantity(cartDto.getQuantity());
-        cart.setCreatedDate(new Date());
+        //change 1042024
+    //    cart.setCreatedDate(new Date());
         cartRepository.save(cart);
     }
  
@@ -77,16 +94,7 @@ public class CartServiceImpl implements CartService{
  
     }
  
-    public void deleteCartItems(Long userId) {
-        cartRepository.deleteAll();
-    }
- 
- 
-    public void deleteUserCartItems(User user) {
-        cartRepository.deleteByUser(user);
-    }
 
-	
 
 	
 }

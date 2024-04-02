@@ -33,24 +33,30 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+ 
     @Column(nullable = false)
     private Date orderDate;
-
+ 
     // Other order properties, constructors, getters, and setters
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus orderStatus;
+    private Enums.OrderStatus orderStatus;
+    
+    //added1042024
+    private double totalAmount;
     
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
-
-    @OneToMany(mappedBy = "order")
-    private List<OrderProduct> orderProducts;
-
+    
     @OneToOne
-    @JoinColumn(name = "cart_id", referencedColumnName = "id")
-    private Cart cart;
+    @JoinColumn(name = "payment_id", referencedColumnName = "id")
+    private Payment payment;
+ 
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    //added1042024
+   // @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private List<OrderProduct> orderProducts;
+ 
 
 }

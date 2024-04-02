@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.dxc.scb.dto.JwtAuthenticationResponse;
@@ -14,27 +15,34 @@ import com.dxc.scb.dto.SignInRequest;
 import com.dxc.scb.dto.SignUpRequest;
 import com.dxc.scb.Repository.AddressRepository;
 import com.dxc.scb.Repository.UserRepository;
+import com.dxc.scb.Security.JWTAuthenticationFilter;
 import com.dxc.scb.model.Address;
 import com.dxc.scb.model.Enums;
 import com.dxc.scb.model.User;
 import com.dxc.scb.Service.AuthenticationService;
 import com.dxc.scb.Service.JwtService;
 
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
 	private AddressRepository addressRepository;
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	public JWTAuthenticationFilter filter;
 	@Autowired
-	private AuthenticationManager authenticationManager;
+	public PasswordEncoder passwordEncoder;
+	
+	
+
 	@Autowired
-	private JwtService jwtService;
+	public AuthenticationManager authenticationManager;
+	@Autowired
+	public JwtService jwtService;
 
 	@Override
 	public User signup(SignUpRequest signUpRequest) throws Exception {
@@ -88,8 +96,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		// Use the user object here (assuming it's not null)
 
-		String jwt = jwtService.generateToken(user);
-		String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
+		String jwt = jwtService.generateToken((UserDetails) user);
+		String refreshToken = jwtService.generateRefreshToken(new HashMap<>(), (UserDetails) user);
 
 		JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
 
@@ -103,8 +111,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		String userEmail = jwtService.extractUserName(refreshTokenRequest.getToken());
 		User user = userRepository.findByEmail(userEmail).orElseThrow();
 
-		if (jwtService.isTokenValid(refreshTokenRequest.getToken(), user)) {
-			String jwt = jwtService.generateToken(user);
+		if (jwtService.isTokenValid(refreshTokenRequest.getToken(), (UserDetails) user)) {
+			String jwt = jwtService.generateToken((UserDetails) user);
 
 			JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
 

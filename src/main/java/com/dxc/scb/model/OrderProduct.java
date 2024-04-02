@@ -22,27 +22,50 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name="OrderProduct")
 public class OrderProduct {
-	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
     private long orderProductId;
-
+ 
 	
 	@Column
 	@Nonnull
     private int quantity;
-	
 	@Nonnull
 	@Column
     private double price;
-	
-	  @ManyToOne
+	    @ManyToOne
 	    @JoinColumn(name = "order_id")
 	    private Order order;
-
-	    @ManyToOne
-	    @JoinColumn(name = "product_id")
+ 
+//	    @ManyToOne
+//	    @JoinColumn(name = "product_id")
+//	    private Product product;
+	    @OneToOne
+	    @JoinColumn(name = "product_id", referencedColumnName = "id")
 	    private Product product;
-	
-    
 }
+//public class OrderProduct {
+//	
+//	@Id
+//	@GeneratedValue(strategy=GenerationType.IDENTITY)
+//    private long orderProductId;
+//
+//	
+//	@Column
+//	@Nonnull
+//    private int quantity;
+//	
+//	@Nonnull
+//	@Column
+//    private double price;
+//	
+//	  @ManyToOne
+//	    @JoinColumn(name = "order_id")
+//	    private Order order;
+//
+//	    @ManyToOne
+//	    @JoinColumn(name = "product_id")
+//	    private Product product;
+//	
+//    
+//}

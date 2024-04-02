@@ -16,6 +16,9 @@ public class ProductDto {
 	    private double price;
 	    @Nonnull
 	    private String description;
+	    
+	    private int availableQuantity;
+
 	  
 
 	    public ProductDto(Product product) {
@@ -24,7 +27,11 @@ public class ProductDto {
 	        this.setImageURL(product.getImageURL());
 	        this.setDescription(product.getDescription());
 	        this.setPrice(product.getPrice());
+	        this.setAvailableQuantity(product.getAvailableQuantity());
 	    }
+
+
+	
 
 	 
 }
